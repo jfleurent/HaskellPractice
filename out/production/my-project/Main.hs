@@ -3,4 +3,4 @@ module Main (main) where
 import PracticeProblems
 
 main :: IO ()
-main = determinePalindrome "racecar"
+main = print $ encode "aaaabccaadeeee"
