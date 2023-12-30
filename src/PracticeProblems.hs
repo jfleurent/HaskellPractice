@@ -10,7 +10,15 @@ module PracticeProblems
     pack,
     encode,
     encodeToString,
-    decodeStringList
+    decodeStringList,
+    encodeDirect,
+    dupli,
+    repli,
+    dropEvery,
+    split,
+    slice,
+    rotate,
+    removeAt
   )
 where
 
@@ -138,3 +146,91 @@ decodeString (s : ss)
 
 decodeStringList :: [String] -> String
 decodeStringList s = concat $ map decodeString s
+
+-----------------------------------------------------------------------------------------------------------------------
+-- !!!! Problem 13 !!!!
+-- (**) Run-length encoding of a list (direct solution)
+
+countChar :: String -> [(Int,Char)]
+countChar [] = []
+countChar (x : xs) = (length ((x : takeWhile (== x) xs)),x) : countChar (dropWhile (== x) xs)
+
+encodeDirect :: String -> [String]
+encodeDirect s = map encodedMessage (countChar s)
+                    
+-----------------------------------------------------------------------------------------------------------------------
+-- !!!! Problem 14 !!!!
+-- (*) Duplicate the elements of a list.
+
+dupli :: [a] -> [a]
+dupli [] = []
+dupli (x:xs) = replicate 2 x ++ dupli xs
+
+-----------------------------------------------------------------------------------------------------------------------
+-- !!!! Problem 15 !!!!
+-- (**) Replicate the elements of a list a given number of times.
+
+repli :: String -> Int -> String
+repli [] _ = []
+repli _ 0 = []
+repli (x:xs) y = replicate y x ++ repli xs y
+
+-----------------------------------------------------------------------------------------------------------------------
+-- !!!! Problem 16 !!!!
+-- (**) Drop every N'th element from a list.
+
+dropEvery :: String -> Int -> String
+dropEvery [] _ = []
+dropEvery x 0 = x
+dropEvery x y =  (take (y-1) x) ++ dropEvery (drop y x) y
+
+-----------------------------------------------------------------------------------------------------------------------
+-- !!!! Problem 17 !!!!
+-- (*) Split a list into two parts; the length of the first part is given.
+
+collect :: String -> Int -> String
+collect [] _ = []
+collect _ 0 = []
+collect (x:xs) y = x : collect xs (y - 1)
+
+goto :: String -> Int -> String
+goto [] _ = []
+goto x 0 = x
+goto (x:xs) y 
+       | y > 0 = goto xs (y - 1)
+       | y == 0 = xs
+       | (x:xs) == [] = []
+       | otherwise = []
+
+split :: String -> Int -> [String]
+split x y = collect x y : [goto x y]
+
+-----------------------------------------------------------------------------------------------------------------------
+-- !!!! Problem 18 !!!!
+-- (**) Extract a slice from a list.
+
+slice :: String -> Int -> Int -> String
+slice x y z= drop (y-1) $ take z x
+
+-----------------------------------------------------------------------------------------------------------------------
+-- !!!! Problem 19 !!!!
+-- (**) Rotate a list N places to the left.
+
+rotate :: String -> Int -> String
+rotate [] _ = []
+rotate x 0 = x
+rotate x y
+          | y > 0 = drop index x ++ take index x
+          | y < 0 = drop reverseIndex x ++ take reverseIndex x
+          where index = (y `mod` length x); reverseIndex = abs $ ( abs y `mod` length x) - length x
+          
+-----------------------------------------------------------------------------------------------------------------------
+-- !!!! Problem 20 !!!!
+-- (*) Remove the K'th element from a list.
+
+removeAt :: Int -> String -> Maybe (Char, String)
+removeAt _ [] = Nothing
+removeAt 0 _ = Nothing
+removeAt x y
+        | start >= 0 && end < length y = Just (slice y x end !! 0, take start y ++ drop x y )
+        where start = x-1; end = x+1
